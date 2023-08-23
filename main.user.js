@@ -3,7 +3,7 @@
 // @namespace   https://github.com/TentacleTenticals/
 // @match       https://dtf.ru/*
 // @grant       Tentacle Tenticals
-// @version     1.0.5
+// @version     1.0.2
 // @author      Tentacle Tenticals
 // @description Скрипт для получения якорей (anchor)
 // @homepage    https://github.com/TentacleTenticals/DTF-Anchor-getter-2
@@ -20,15 +20,16 @@
 /* jshint esversion:8 */
 
 (() => {
-  const lazyMode = false;
-  let widget;
+  const lazyMode = false,
+        cut = 50;
 
 class Anchor{
-  widgetItem(path, editor){
+  widgetItem(){
+    const widget = document.getElementById(`widget`);
     this.p = widget.querySelector(`#w-anchorList`);
     if(!this.p){
       this.main=new El().Div({
-        path: path.children[0].children[1],
+        path: widget.children[0].children[1],
         cName: 'w-btn',
         id: 'w-anchorList',
         text: '⚓',
@@ -40,7 +41,7 @@ class Anchor{
       });
 
       this.op=new El().Div({
-        path: path.children[1],
+        path: widget.children[1],
         cName: 'wl-anchorList w-item hidden',
         rtn: true
       });
@@ -117,10 +118,9 @@ class Anchor{
     });
   }
   anchorSearch(){
-    const path = widget.children[1].querySelector(`.wl-anchorList`).children[2];
+    const path = document.getElementById(`widgetPanel`).children[1].children[1].querySelector(`.wl-item.anchor`).children[1].children[1];
     if(path.children.length > 0) path.replaceChildren();
     const sites = ['ce-paragraph', 'cdx-tool', 'quote-tool', 'incut-tool', 'code-tool', 'andropov-tool__input', 'embed-block', 'gallery', 'audio-tool', 'quiz-tool', 'number-tool', 'person-tool', 'ce-header'];
-    const cut = 70;
     for (let i = 0, arr = document.querySelectorAll(`.ce-block--anchor`), len = arr.length; i < len; i++) {
       let res;
       res = (() => {
@@ -215,13 +215,13 @@ class Anchor{
     }
   }
   linksSearch(){
-    const path = widget.children[1].querySelector(`.wl-anchorList`).children[2];
+    const path = document.getElementById(`widgetPanel`).children[1].children[1].querySelector(`.wl-item.anchor`).children[1].children[1];
     if(path.children.length > 0) path.replaceChildren();
     for(let i = 0, arr = document.querySelectorAll(`.content--full a`), len = arr.length; i < len; i++){
       if(arr[i].className && arr[i].className.match(/content__anchor/)){
         this.Group({
           path: path,
-          text: arr[i].nextElementSibling && arr[i].nextElementSibling.children[0].nodeName === 'P' ? arr[i].nextElementSibling.textContent.trim().slice(0, 70) : arr[i].getAttribute('name'),
+          text: arr[i].nextElementSibling && arr[i].nextElementSibling.children[0].nodeName === 'P' ? arr[i].nextElementSibling.textContent.trim().slice(0, cut) : arr[i].getAttribute('name'),
           link: arr[i]
         });
       }
@@ -230,44 +230,50 @@ class Anchor{
 };
 
 let css = `
-.wl-anchorList .anchors {
+.wl-item.anchor .anchors {
   display: flex;
   flex-direction: column;
   gap: 3px 0;
   max-height: 100px;
   overflow: auto;
 }
-.wl-anchorList .anchors::-webkit-scrollbar-thumb {
+.wl-item.anchor .anchors::-webkit-scrollbar-thumb {
   background-color: rgb(189 164 164);
 }
-.wl-anchorList .anchors::-webkit-scrollbar {
+.wl-item.anchor .anchors::-webkit-scrollbar {
   width: 2px;
 }
-.wl-anchorList .group {
+.wl-item.anchor .group {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0 5px;
 }
-.wl-anchorList .group .label {
+.wl-item.anchor .group .label {
   font-size: 13px;
+  word-break: break-all;
+  color: rgb(255,255,255);
 }
-.wl-anchorList .group .buttons {
+.wl-item.anchor .group .buttons {
   display: flex;
   gap: 0 5px;
 }
-.wl-anchorList .group .buttons .btn {
+.wl-item.anchor .group .buttons .btn {
   color: rgb(255,255,255);
   cursor: pointer;
 }
-.wl-anchorList .group .buttons .btn:hover {
+.wl-item.anchor .group .buttons .btn:hover {
   filter: brightness(0.8);
 }
-.wl-anchorList .getter {
+.wl-item.anchor .getter {
   background: linear-gradient(0deg, rgb(185 179 179), transparent);
   background-color: rgb(255,255,255);
+  font-size: 14px;
+  margin: 3px;
+  border-radius: 2px;
   cursor: pointer;
 }
-.wl-anchorList .getter:hover {
+.wl-item.anchor .getter:hover {
   filter: brightness(0.8);
 }
 `;
@@ -325,16 +331,38 @@ let css = `
   new El().Css('DTF-core', dtfCoreCSS, true);
   new El().Css('DTF-anchor', css);
   new El().Css('DTF-widgets', widgetCss(), true);
-  widget=new Widget().main();
-  new Anchor().widgetItem(widget);
+  new WidgetPanel({
+    bText: '⚓',
+    hText: 'Список якорей',
+    cName: 'anchor',
+    id: 'anchor',
+    items: (i) => {
+      new El().Button({
+        path: i,
+        cName: 'getter',
+        text: 'Получить список ⚓\uFE0E',
+        onclick: () => {
+          if(!document.querySelectorAll(`.content--full a .content_anchor`)) return;
+          if(document.location.href.match(/\?writing=\d+/)) new Anchor().anchorSearch();
+          else
+          new Anchor().linksSearch();
+        }
+      });
+      new El().Div({
+        path: i,
+        cName: 'anchors'
+      });
+    }
+  });
 
   function run({page, status}){
+    if(lazyMode) return;
     if(page === 'editor' && status === 'ready'){
       if(document.querySelectorAll(`.content--full a .content_anchor`)) new Anchor().anchorSearch();
     }
     else
     if(page === 'editor' && status === 'closed'){
-      const path = widget.children[1].querySelector(`.wl-anchorList`).children[2];
+      const path = document.getElementById(`widgetPanel`).children[1].children[1].querySelector(`.wl-item.anchor`).children[1].children[1];
       path.replaceChildren();
     }else
     if(page === 'def' && getPageType(document.location.href) === 'topics'){
