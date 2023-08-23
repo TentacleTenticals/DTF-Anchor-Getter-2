@@ -235,6 +235,8 @@ let css = `
   flex-direction: column;
   gap: 3px 0;
   max-height: 100px;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(189 164 164) transparent;
   overflow: auto;
 }
 .wl-item.anchor .anchors::-webkit-scrollbar-thumb {
