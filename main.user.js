@@ -6,9 +6,9 @@
 // @version     1.0.3
 // @author      Tentacle Tenticals
 // @description Скрипт для получения якорей (anchor)
-// @homepage    https://github.com/TentacleTenticals/DTF-Anchor-getter-2
-// @updateURL   https://github.com/TentacleTenticals/DTF-Anchor-getter-2/raw/main/main.user.js
-// @downloadURL https://github.com/TentacleTenticals/DTF-Anchor-getter-2/raw/main/main.user.js
+// @homepage    https://github.com/TentacleTenticals/DTF-Anchor-Getter-2
+// @updateURL   https://github.com/TentacleTenticals/DTF-Anchor-Getter-2/raw/main/main.user.js
+// @downloadURL https://github.com/TentacleTenticals/DTF-Anchor-Getter-2/raw/main/main.user.js
 //
 // @require     https://github.com/TentacleTenticals/dtf-libs-2.0/raw/main/libs/splitCls/classes.js
 // @require     https://github.com/TentacleTenticals/dtf-libs-2.0/raw/main/libs/settings/css/dtfCore.js
