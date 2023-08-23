@@ -3,7 +3,7 @@
 // @namespace   https://github.com/TentacleTenticals/
 // @match       https://dtf.ru/*
 // @grant       Tentacle Tenticals
-// @version     1.0.3
+// @version     1.0.4
 // @author      Tentacle Tenticals
 // @description Скрипт для получения якорей (anchor)
 // @homepage    https://github.com/TentacleTenticals/DTF-Anchor-Getter-2
@@ -20,8 +20,11 @@
 /* jshint esversion:8 */
 
 (() => {
-  const lazyMode = false,
-        cut = 70;
+  const cfg = {
+    lazyMode: false,
+    smartphone: false,
+    cut: 70
+  }
 
 class Anchor{
   widgetItem(){
@@ -128,31 +131,31 @@ class Anchor{
           case 'ce-header':
           return {
             anchor: arr[i].getAttribute('data-anchor'),
-            text: arr[i].children[2].children[0].textContent?.trim()?.slice(0, cut),
+            text: arr[i].children[2].children[0].textContent?.trim()?.slice(0, cfg.cut),
             link: arr[i].children[2].children[0]
           }
           case 'ce-paragraph':
           return {
             anchor: arr[i].getAttribute('data-anchor'),
-            text: arr[i].children[2].children[0].textContent?.trim()?.slice(0, cut),
+            text: arr[i].children[2].children[0].textContent?.trim()?.slice(0, cfg.cut),
             link: arr[i].children[2].children[0]
           }
           case 'cdx-tool':
           return {
             anchor: arr[i].getAttribute('data-anchor'),
-            text: arr[i].children[2].children[0].children[0].textContent?.trim()?.slice(0, cut),
+            text: arr[i].children[2].children[0].children[0].textContent?.trim()?.slice(0, cfg.cut),
             link: arr[i].children[2].children[0].children[0]
           }
           case 'incut-tool':
           return {
             anchor: arr[i].getAttribute('data-anchor'),
-            text: arr[i].children[2].children[0].children[0].textContent?.trim()?.slice(0, cut),
+            text: arr[i].children[2].children[0].children[0].textContent?.trim()?.slice(0, cfg.cut),
             link: arr[i].children[2].children[0].children[0]
           }
           case 'quote-tool':
           return {
             anchor: arr[i].getAttribute('data-anchor'),
-            text: arr[i].children[2].children[0].children[1].textContent?.trim()?.slice(0, cut),
+            text: arr[i].children[2].children[0].children[1].textContent?.trim()?.slice(0, cfg.cut),
             link: arr[i].children[2].children[0].children[1]
           }
           case 'code-tool':
@@ -188,7 +191,7 @@ class Anchor{
           case 'quiz-tool':
           return {
             anchor: arr[i].getAttribute('data-anchor'),
-            text: arr[i].children[2].children[0].children[0].textContent?.trim()?.slice(0, cut),
+            text: arr[i].children[2].children[0].children[0].textContent?.trim()?.slice(0, cfg.cut),
             link: arr[i].children[2].children[0].children[0]
           }
           case 'number-tool':
@@ -221,7 +224,7 @@ class Anchor{
       if(arr[i].className && arr[i].className.match(/content__anchor/)){
         this.Group({
           path: path,
-          text: arr[i].nextElementSibling && arr[i].nextElementSibling.children[0].nodeName === 'P' ? arr[i].nextElementSibling.textContent.trim().slice(0, cut) : arr[i].getAttribute('name'),
+          text: arr[i].nextElementSibling && arr[i].nextElementSibling.children[0].nodeName === 'P' ? arr[i].nextElementSibling.textContent.trim().slice(0, cfg.cut) : arr[i].getAttribute('name'),
           link: arr[i]
         });
       }
@@ -229,7 +232,17 @@ class Anchor{
   }
 };
 
-let css = `
+const css = (cfg) => `
+
+${cfg.smartphone &&
+  `.sidePanel>.header {
+     padding: 5px 6px 5px 6px !important;
+   }
+   .mainPanel>.header {
+     height: 16px !important;
+   }`||''
+}
+
 .wl-item.anchor .anchors {
   display: flex;
   flex-direction: column;
@@ -331,7 +344,7 @@ let css = `
   }
 
   new El().Css('DTF-core', dtfCoreCSS, true);
-  new El().Css('DTF-anchor', css);
+  new El().Css('DTF-anchor', css(cfg));
   new El().Css('DTF-widgets', widgetCss(), true);
   new WidgetPanel({
     bText: '⚓',
@@ -358,7 +371,7 @@ let css = `
   });
 
   function run({page, status}){
-    if(lazyMode) return;
+    if(cfg.lazyMode) return;
     if(page === 'editor' && status === 'ready'){
       if(document.querySelectorAll(`.content--full a .content_anchor`)) new Anchor().anchorSearch();
     }
