@@ -21,7 +21,7 @@
 
 (() => {
   const lazyMode = false,
-        cut = 50;
+        cut = 70;
 
 class Anchor{
   widgetItem(){
