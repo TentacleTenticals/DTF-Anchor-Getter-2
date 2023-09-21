@@ -3,7 +3,7 @@
 // @namespace   https://github.com/TentacleTenticals/
 // @match       https://dtf.ru/*
 // @grant       Tentacle Tenticals
-// @version     1.0.4
+// @version     1.0.5
 // @author      Tentacle Tenticals
 // @description Скрипт для получения якорей (anchor)
 // @homepage    https://github.com/TentacleTenticals/DTF-Anchor-Getter-2
@@ -11,10 +11,6 @@
 // @downloadURL https://github.com/TentacleTenticals/DTF-Anchor-Getter-2/raw/main/main.user.js
 //
 // @require     https://github.com/TentacleTenticals/dtf-libs-2.0/raw/main/libs/splitCls/classes.js
-// @require     https://github.com/TentacleTenticals/dtf-libs-2.0/raw/main/libs/settings/css/dtfCore.js
-//
-// @require     https://github.com/TentacleTenticals/dtf-libs-2.0/raw/main/libs/widget/panel.js
-// @require     https://github.com/TentacleTenticals/dtf-libs-2.0/raw/main/libs/widget/css/panel.js
 // @license MIT
 // ==/UserScript==
 /* jshint esversion:8 */
@@ -370,17 +366,17 @@ ${cfg.smartphone &&
     }
   });
 
-  function run({page, status}){
+  function run(c){
     if(cfg.lazyMode) return;
-    if(page === 'editor' && status === 'ready'){
+    if(c.page === 'editor' && c.status === 'ready'){
       if(document.querySelectorAll(`.content--full a .content_anchor`)) new Anchor().anchorSearch();
     }
     else
-    if(page === 'editor' && status === 'closed'){
+    if(c.page === 'editor' && c.status === 'closed'){
       const path = document.getElementById(`widgetPanel`).children[1].children[1].querySelector(`.wl-item.anchor`).children[1].children[1];
       path.replaceChildren();
     }else
-    if(page === 'def' && getPageType(document.location.href) === 'topics'){
+    if(c.page === 'def' && getPageType(document.location.href) === 'topics'){
       if(document.querySelectorAll(`.content--full a .content_anchor`)) new Anchor().linksSearch();
     }
   }
