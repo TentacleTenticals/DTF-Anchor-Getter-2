@@ -3,7 +3,7 @@
 // @namespace   https://github.com/TentacleTenticals/
 // @match       https://dtf.ru/*
 // @grant       Tentacle Tenticals
-// @version     1.0.5
+// @version     1.0.7
 // @author      Tentacle Tenticals
 // @description Скрипт для получения якорей (anchor)
 // @homepage    https://github.com/TentacleTenticals/DTF-Anchor-Getter-2
@@ -11,6 +11,9 @@
 // @downloadURL https://github.com/TentacleTenticals/DTF-Anchor-Getter-2/raw/main/main.user.js
 //
 // @require     https://github.com/TentacleTenticals/dtf-libs-2.0/raw/main/libs/splitCls/classes.js
+// @require     https://github.com/TentacleTenticals/dtf-libs-2.0/raw/main/css/main.js
+//
+// @require     https://github.com/TentacleTenticals/dtf-libs-2.0/raw/main/interface/widget/js/wItem.js
 // @license MIT
 // ==/UserScript==
 /* jshint esversion:8 */
@@ -18,59 +21,10 @@
 (() => {
   const cfg = {
     lazyMode: false,
-    smartphone: false,
     cut: 70
-  }
+  };
 
 class Anchor{
-  widgetItem(){
-    const widget = document.getElementById(`widget`);
-    this.p = widget.querySelector(`#w-anchorList`);
-    if(!this.p){
-      this.main=new El().Div({
-        path: widget.children[0].children[1],
-        cName: 'w-btn',
-        id: 'w-anchorList',
-        text: '⚓',
-        onclick: () => {
-          this.op.classList.toggle('hidden');
-          this.main.classList.toggle('active');
-        },
-        rtn: true
-      });
-
-      this.op=new El().Div({
-        path: widget.children[1],
-        cName: 'wl-anchorList w-item hidden',
-        rtn: true
-      });
-      new El().Div({
-        path: this.op,
-        cName: 'header',
-        text: 'Лист якорей',
-        onclick: () => {
-          this.op.classList.toggle('hidden');
-          this.main.classList.toggle('active');
-        }
-      });
-      new El().Button({
-        path: this.op,
-        cName: 'getter',
-        text: 'Получить список ⚓\uFE0E',
-        onclick: () => {
-          if(!document.querySelectorAll(`.content--full a .content_anchor`)) return;
-          if(document.location.href.match(/\?writing=\d+/)) this.anchorSearch();
-          else
-          this.linksSearch();
-        }
-      })
-      this.itemList=new El().Div({
-        path: this.op,
-        cName: 'anchors',
-        rtn: true
-      });
-    }
-  }
   Group({path, text, anchor, link, editor}){
     const group = new El().Div({
       path: path,
@@ -229,16 +183,6 @@ class Anchor{
 };
 
 const css = (cfg) => `
-
-${cfg.smartphone &&
-  `.sidePanel>.header {
-     padding: 5px 6px 5px 6px !important;
-   }
-   .mainPanel>.header {
-     height: 16px !important;
-   }`||''
-}
-
 .wl-item.anchor .anchors {
   display: flex;
   flex-direction: column;
@@ -339,10 +283,10 @@ ${cfg.smartphone &&
     })
   }
 
-  new El().Css('DTF-core', dtfCoreCSS, true);
+  new El().Css('DTF-core', mainCSS(), true);
   new El().Css('DTF-anchor', css(cfg));
-  new El().Css('DTF-widgets', widgetCss(), true);
-  new WidgetPanel({
+  // new El().Css('DTF-widgets', widgetCss(), true);
+  new wItem({
     bText: '⚓',
     hText: 'Список якорей',
     cName: 'anchor',
@@ -366,17 +310,17 @@ ${cfg.smartphone &&
     }
   });
 
-  function run(c){
+  function run({page, status}){
     if(cfg.lazyMode) return;
-    if(c.page === 'editor' && c.status === 'ready'){
+    if(page === 'editor' && status === 'ready'){
       if(document.querySelectorAll(`.content--full a .content_anchor`)) new Anchor().anchorSearch();
     }
     else
-    if(c.page === 'editor' && c.status === 'closed'){
+    if(page === 'editor' && status === 'closed'){
       const path = document.getElementById(`widgetPanel`).children[1].children[1].querySelector(`.wl-item.anchor`).children[1].children[1];
       path.replaceChildren();
     }else
-    if(c.page === 'def' && getPageType(document.location.href) === 'topics'){
+    if(page === 'def' && getPageType(document.location.href) === 'topics'){
       if(document.querySelectorAll(`.content--full a .content_anchor`)) new Anchor().linksSearch();
     }
   }
